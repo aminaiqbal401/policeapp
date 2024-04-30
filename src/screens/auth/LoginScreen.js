@@ -1,3 +1,4 @@
+import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -5,29 +6,115 @@ import {
   SafeAreaView,
   TouchableOpacity,
 } from 'react-native';
-import React from 'react';
 import {COLOR, FONT_FAMILY} from '../../styles/consts/GlobalStyles';
 import ratio from '../../styles/consts/ratio';
 import Input from '../../(components)/Input';
 import WhiteBtn from '../../(components)/WhiteBtn';
+import auth from '@react-native-firebase/auth';
+import {useAuthContext} from '../../context/AuthContext';
+import Toast from 'react-native-toast-message';
 
 const {fontPixel, pixelSizeVertical} = ratio;
 
 const LoginScreen = ({navigation}) => {
+  const {dispatch, user} = useAuthContext(); // Accessing user from AuthContext
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+
+  const handleInputChange = (name, value) => {
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleLogin = () => {
+    let {email, password} = formData;
+
+    if (!email) return alert('Email is invalid');
+    if (!password) return alert('Password is invalid');
+
+    setIsProcessing(true);
+
+    auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(userCredential => {
+        const user = userCredential.user;
+
+        dispatch({type: 'LOGIN', payload: {user}});
+        Toast.show({
+          type: 'success',
+          text1: 'Login',
+          text2: 'Login success',
+        });
+      })
+      .catch(error => {
+        if (error.code === 'auth/invalid-email') {
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'That email address is invalid!',
+          });
+        } else if (error.code === 'auth/user-not-found') {
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'User not found',
+          });
+        } else if (error.code === 'auth/wrong-password') {
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'Wrong password',
+          });
+        } else if (error.code === 'auth/invalid-credential') {
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'Wrong credentials',
+          });
+        } else {
+          console.log('Unhandled error:', error);
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'Something went wrong',
+          });
+        }
+      })
+      .finally(() => {
+        setIsProcessing(false);
+      });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.headingText}>Welcome to tradly</Text>
+      <Text style={styles.headingText}>Welcome to Police Database app</Text>
       <Text style={styles.infoText}>Login to your account</Text>
       <View style={styles.inputsContainer}>
-        <Input placeholder={'Email/Mobile Number'} />
-        <Input placeholder={'Password'} />
+        <Input
+          id={'email'}
+          name={'email'}
+          placeholder={'Email/Mobile Number'}
+          keyboardType={'email-address'}
+          onChangeText={handleInputChange}
+        />
+        <Input
+          id={'password'}
+          name={'password'}
+          placeholder={'Password'}
+          onChangeText={handleInputChange}
+          secureTextEntry={true}
+        />
       </View>
-      <WhiteBtn
-        text={'Login'}
-        handleFunc={() => navigation.navigate("dashboard")}
-      />
+      <WhiteBtn text={'Login'} handleFunc={handleLogin} />
       <Text style={styles.bottomText}>Forgot your password?</Text>
-      <TouchableOpacity onPress={() => navigation.navigate('signup')}>
+      <TouchableOpacity
+        disabled={isProcessing}
+        onPress={() => navigation.navigate('signup')}>
         <Text style={styles.bottomText}>
           Don’t have an account?
           <Text style={{fontFamily: FONT_FAMILY.montserratSemiBold}}>

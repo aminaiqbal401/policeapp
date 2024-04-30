@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "136751703320",
+    "project_id": "police-database-app",
+    "storage_bucket": "police-database-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:136751703320:android:2ae5b7f0fcafd49233aa6d",
+        "android_client_info": {
+          "package_name": "com.policeapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEglnPgitqHKHOIXhuQasNx1jJ1cYMy5U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

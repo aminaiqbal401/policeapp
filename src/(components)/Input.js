@@ -4,12 +4,25 @@ import {COLOR, FONT_FAMILY} from '../styles/consts/GlobalStyles';
 import ratio from '../styles/consts/ratio';
 
 const {widthPixel, fontPixel, pixelSizeVertical} = ratio;
-const Input = ({placeholder}) => {
+
+const Input = ({
+  id,
+  name,
+  placeholder,
+  onChangeText,
+  secureTextEntry,
+  keyboardType,
+}) => {
   return (
     <TextInput
       style={styles.input}
       placeholderTextColor={COLOR.white}
       placeholder={placeholder}
+      keyboardType={keyboardType}
+      onChangeText={text => onChangeText(name, text)}
+      secureTextEntry={secureTextEntry}
+      id={id}
+      name={name}
     />
   );
 };

@@ -18,7 +18,7 @@ export const COLOR = {
   green: '#33907C',
   green_1: '#E3EFF2',
   grey: '#606A7B',
-  blue: '#4EA0FF',
+  blue: '#000080',
   neutral: '#4F4F4F',
   neutral_03: '#B9B9B9',
   border_clr: 'rgba(0,0,0,0.1)',

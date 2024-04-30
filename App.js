@@ -1,19 +1,20 @@
 import 'react-native-gesture-handler';
-import { View, Text } from 'react-native'
-import React from 'react'
-import { NavigationContainer } from '@react-navigation/native'
-import { createStackNavigator } from '@react-navigation/stack';
-import Login from './src/screens/auth/Login';
+import React from 'react';
+import AuthContextProvider from './src/context/AuthContext';
+import AppNavigator from './src/navigation/AppNavigator';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
+import {GluestackUIProvider} from '@gluestack-ui/themed';
 
-const Stack = createStackNavigator()
 const App = () => {
   return (
-  <NavigationContainer>
-    <Stack.Navigator>
-      <Stack.Screen name='login' component={Login} />
-    </Stack.Navigator>
-  </NavigationContainer>
-  )
-}
+    <AuthContextProvider>
+      <SafeAreaProvider>
+        <AppNavigator />
+        <Toast />
+      </SafeAreaProvider>
+    </AuthContextProvider>
+  );
+};
 
-export default App
+export default App;
