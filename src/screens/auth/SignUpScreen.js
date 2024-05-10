@@ -64,8 +64,45 @@ const SignUpScreen = ({navigation}) => {
       .then(() => {
         const user = auth().currentUser;
         if (user) {
-          dispatch({type: 'LOGIN', payload: {user}});
-          console.log('User account created & signed in!', user);
+          // Save user role to Firestore
+          firestore()
+            .collection('users')
+            .doc(user.uid)
+            .set({
+              role: 'user', // You can set the role as per your requirements
+            })
+            .then(() => {
+              // Fetch user role from Firestore
+              firestore()
+                .collection('users')
+                .doc(user.uid)
+                .get()
+                .then(doc => {
+                  if (doc.exists) {
+                    const userData = doc.data();
+                    const userWithRole = {
+                      ...user,
+                      role: userData.role,
+                    };
+                    dispatch({type: 'LOGIN', payload: {user: userWithRole}});
+                    console.log(
+                      'User account created & signed in!',
+                      userWithRole,
+                    );
+                  } else {
+                    console.error('User document not found');
+                  }
+                })
+                .catch(error => {
+                  console.error(
+                    'Error fetching user role from Firestore:',
+                    error,
+                  );
+                });
+            })
+            .catch(error => {
+              console.error('Error saving user role to Firestore:', error);
+            });
         } else {
           console.error('User not found after profile update');
         }

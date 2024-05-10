@@ -1,8 +1,10 @@
 import React, {createContext, useContext, useEffect, useReducer} from 'react';
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore'; // Import Firestore
 
 export const AuthContext = createContext();
 const initialState = {isAuthenticated: false, user: {uid: ''}};
+
 const reducer = (state, {type, payload}) => {
   switch (type) {
     case 'LOGIN':
@@ -26,9 +28,29 @@ export default function AuthContextProvider({children}) {
 
   // Handle user state changes
   useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(user => {
+    const subscriber = auth().onAuthStateChanged(async user => {
       if (user) {
-        dispatch({type: 'LOGIN', payload: {user}});
+        try {
+          // Fetch user role from Firestore
+          const userDoc = await firestore()
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+          if (userDoc.exists) {
+            const userData = userDoc.data();
+            const userWithRole = {
+              ...user,
+              role: userData.role,
+            };
+            dispatch({type: 'LOGIN', payload: {user: userWithRole}});
+            console.log('User account created & signed in!', userWithRole);
+          } else {
+            console.error('User document not found');
+          }
+        } catch (error) {
+          console.error('Error fetching user role:', error);
+        }
       } else {
         dispatch({type: 'LOGOUT'}); // Logout when user is null
       }

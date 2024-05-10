@@ -1,26 +1,38 @@
-import {Button, StyleSheet, Text, View} from 'react-native';
+import {
+  Button,
+  StyleSheet,
+  Text,
+  View,
+  Pressable,
+  TouchableOpacity,
+} from 'react-native';
 import React from 'react';
 import {useAuthContext} from '../../context/AuthContext';
-import {COLOR} from '../../styles/consts/GlobalStyles';
+import {COLOR, FONT_FAMILY} from '../../styles/consts/GlobalStyles';
 import Toast from 'react-native-toast-message';
+import ratio from '../../styles/consts/ratio';
 
-const HomeScreen = () => {
+const HomeScreen = ({navigation}) => {
   const {user} = useAuthContext();
-  const showToast = () => {
-    Toast.show({
-      type: 'success',
-      text1: 'Hello',
-      text2: 'This is some something 👋',
-    });
-    console.log('user', user);
-  };
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Welcome: {user.email}</Text>
-      <Text style={styles.text}>User ID: {user.uid}</Text>
-      <Text style={styles.text}>User Name: {user.displayName}</Text>
-
-      <Button style={{padding: 3}} onPress={showToast} title="Test" />
+      <View style={styles.btnView}>
+        <TouchableOpacity
+          style={styles.btn}
+          onPress={() => navigation.navigate('tehsil')}>
+          <Text style={styles.btnText}>Tehsils</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.btn}
+          onPress={() => navigation.navigate('district')}>
+          <Text style={styles.btnText}>Destricts</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.btn}
+          onPress={() => navigation.navigate('policeStation')}>
+          <Text style={styles.btnText}>Police Stations</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -28,6 +40,20 @@ const HomeScreen = () => {
 export default HomeScreen;
 
 const styles = StyleSheet.create({
+  btnText: {
+    color: COLOR.black,
+    fontFamily: FONT_FAMILY.montserratMedium,
+  },
+  btn: {
+    backgroundColor: COLOR.off_white,
+    padding: ratio.pixelSizeHorizontal(10),
+    marginHorizontal: ratio.pixelSizeHorizontal(10),
+    borderRadius: ratio.pixelSizeHorizontal(5),
+  },
+  btnView: {
+    gap: ratio.pixelSizeHorizontal(10),
+    paddingVertical: ratio.pixelSizeHorizontal(10),
+  },
   text: {
     color: COLOR.white,
   },

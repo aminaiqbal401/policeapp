@@ -13,6 +13,7 @@ import WhiteBtn from '../../(components)/WhiteBtn';
 import auth from '@react-native-firebase/auth';
 import {useAuthContext} from '../../context/AuthContext';
 import Toast from 'react-native-toast-message';
+import firestore from '@react-native-firebase/firestore';
 
 const {fontPixel, pixelSizeVertical} = ratio;
 
@@ -34,8 +35,14 @@ const LoginScreen = ({navigation}) => {
   const handleLogin = () => {
     let {email, password} = formData;
 
-    if (!email) return alert('Email is invalid');
-    if (!password) return alert('Password is invalid');
+    if (!formData.email || !formData.password) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'All fields are required',
+      });
+      return;
+    }
 
     setIsProcessing(true);
 
@@ -44,12 +51,30 @@ const LoginScreen = ({navigation}) => {
       .then(userCredential => {
         const user = userCredential.user;
 
-        dispatch({type: 'LOGIN', payload: {user}});
-        Toast.show({
-          type: 'success',
-          text1: 'Login',
-          text2: 'Login success',
-        });
+        firestore()
+          .collection('users')
+          .doc(user.uid)
+          .get()
+          .then(doc => {
+            if (doc.exists) {
+              const userData = doc.data();
+              const userWithRole = {
+                ...user,
+                role: userData.role,
+              };
+              dispatch({type: 'LOGIN', payload: {user: userWithRole}});
+              Toast.show({
+                type: 'success',
+                text1: 'Login',
+                text2: 'Login success',
+              });
+            } else {
+              console.error('User document not found');
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching user role from Firestore:', error);
+          });
       })
       .catch(error => {
         if (error.code === 'auth/invalid-email') {

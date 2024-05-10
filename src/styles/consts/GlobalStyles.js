@@ -14,7 +14,7 @@ export const FONT_FAMILY = {
 export const COLOR = {
   white: '#FFF',
   black: '#000',
-  bg: '#F3F7FD',
+  bg: '#000080',
   green: '#33907C',
   green_1: '#E3EFF2',
   grey: '#606A7B',
@@ -24,6 +24,9 @@ export const COLOR = {
   border_clr: 'rgba(0,0,0,0.1)',
   icon_bg_clr: 'rgba(200,200,200,0.4)',
   input_clr: '#DBDBDE',
+  off_white: '#ffffe4',
+  low_white: 'rgba(255,255,255,0.5)',
+  red: '#FF0000',
 };
 /* Text */
 export const TEXT = {
@@ -51,7 +54,7 @@ export const TEXT = {
   title: {
     fontFamily: FONT_FAMILY.montserratSemiBold,
     fontSize: fontPixel(18),
-    color: COLOR.black,
+    color: COLOR.white,
     lineHeight: fontPixel(20),
     letterSpacing: fontPixel(-0.165),
     paddingVertical: pixelSizeVertical(15),

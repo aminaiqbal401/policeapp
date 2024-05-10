@@ -16,7 +16,7 @@ const Input = ({
   return (
     <TextInput
       style={styles.input}
-      placeholderTextColor={COLOR.white}
+      placeholderTextColor={COLOR.low_white}
       placeholder={placeholder}
       keyboardType={keyboardType}
       onChangeText={text => onChangeText(name, text)}
