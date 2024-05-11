@@ -78,27 +78,21 @@ const PoliceStation = ({navigation}) => {
       });
   };
 
-  const handleDelete = policeStationName => {
+  const handleDelete = districtId => {
     firestore()
       .collection('PoliceStations')
-      .where('name', '==', policeStationName)
-      .get()
-      .then(querySnapshot => {
-        querySnapshot.forEach(doc => {
-          doc.ref
-            .delete()
-            .then(() => {
-              Toast.show({
-                type: 'success',
-                text1: 'Success',
-                text2: 'PoliceStation deleted',
-              });
-              getData();
-            })
-            .catch(error => {
-              console.error('Error removing document: ', error);
-            });
+      .doc(districtId)
+      .delete()
+      .then(() => {
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: 'Police Station deleted',
         });
+        getData();
+      })
+      .catch(error => {
+        console.error('Error removing document: ', error);
       });
   };
 
@@ -109,7 +103,10 @@ const PoliceStation = ({navigation}) => {
         .collection('PoliceStations')
         .get()
         .then(querySnapshot => {
-          setData(querySnapshot.docs.map(doc => doc.data()));
+          const policeStationData = querySnapshot.docs.map(doc => {
+            return {id: doc.id, ...doc.data()};
+          });
+          setData(policeStationData);
           setLoading(false);
         });
     } else {
@@ -120,7 +117,10 @@ const PoliceStation = ({navigation}) => {
         .where('name', '<=', searchQuery + '\uf8ff')
         .get()
         .then(querySnapshot => {
-          setData(querySnapshot.docs.map(doc => doc.data()));
+          const policeStationData = querySnapshot.docs.map(doc => {
+            return {id: doc.id, ...doc.data()};
+          });
+          setData(policeStationData);
           setLoading(false);
         });
     }
@@ -153,6 +153,12 @@ const PoliceStation = ({navigation}) => {
   useEffect(() => {
     getData();
   }, [searchQuery]);
+
+  const handleEdit = item => {
+    navigation.navigate('editPoliceStation', {
+      item,
+    });
+  };
 
   return (
     <View style={COMMON.super_Container}>
@@ -224,11 +230,22 @@ const PoliceStation = ({navigation}) => {
                   style={styles.btn}
                   onPress={() => navigation.navigate('crime', {item})}
                 />
-                <Button
-                  title="Delete"
-                  style={styles.btnRed}
-                  onPress={() => handleDelete(item.name)}
-                />
+                {user.role === 'admin' && (
+                  <>
+                    <Button
+                      title="Delete"
+                      style={styles.btnRed}
+                      onPress={() => handleDelete(item.id)}
+                      color={COLOR.red}
+                    />
+                    <Button
+                      title="Edit"
+                      style={styles.btnRed}
+                      onPress={() => handleEdit(item)}
+                      color={COLOR.black}
+                    />
+                  </>
+                )}
               </View>
             </View>
           ))
@@ -252,9 +269,11 @@ const styles = StyleSheet.create({
   },
   btnView: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
     gap: ratio.pixelSizeHorizontal(5),
+    paddingHorizontal: ratio.pixelSizeHorizontal(5),
+    flexWrap: 'wrap',
   },
   selectContainer: {
     margin: ratio.pixelSizeHorizontal(5),

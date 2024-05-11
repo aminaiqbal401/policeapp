@@ -55,38 +55,39 @@ const Tehsil = () => {
       });
   };
 
-  const handleDelete = tehsilName => {
-    firestore()
-      .collection('Tehsils')
-      .where('name', '==', tehsilName)
-      .get()
-      .then(querySnapshot => {
-        querySnapshot.forEach(doc => {
-          doc.ref
-            .delete()
-            .then(() => {
-              Toast.show({
-                type: 'success',
-                text1: 'Success',
-                text2: 'Tehsil deleted',
-              });
-              getData();
-            })
-            .catch(error => {
-              console.error('Error removing document: ', error);
-            });
-        });
-      });
-  };
-
   const getData = () => {
     setLoading(true);
     firestore()
       .collection('Tehsils')
       .get()
       .then(querySnapshot => {
-        setData(querySnapshot.docs.map(doc => doc.data()));
+        const tehsilData = querySnapshot.docs.map(doc => {
+          return {id: doc.id, ...doc.data()};
+        });
+        setData(tehsilData);
         setLoading(false);
+      })
+      .catch(error => {
+        setLoading(false);
+        console.error('Error getting Tehsil documents: ', error);
+      });
+  };
+
+  const handleDelete = tehsilId => {
+    firestore()
+      .collection('Tehsils')
+      .doc(tehsilId)
+      .delete()
+      .then(() => {
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: 'Tehsil deleted',
+        });
+        getData();
+      })
+      .catch(error => {
+        console.error('Error removing Tehsil document: ', error);
       });
   };
 
@@ -118,11 +119,13 @@ const Tehsil = () => {
           data.map((item, index) => (
             <View key={index} style={styles.listItem}>
               <Text style={styles.btnText}>{item.name}</Text>
-              <Button
-                title="Delete"
-                style={styles.btn}
-                onPress={() => handleDelete(item.name)}
-              />
+              {user.role === 'admin' && (
+                <Button
+                  title="Delete"
+                  style={styles.btn}
+                  onPress={() => handleDelete(item.id)}
+                />
+              )}
             </View>
           ))
         ) : (

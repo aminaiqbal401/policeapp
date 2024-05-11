@@ -55,39 +55,32 @@ const District = () => {
       });
   };
 
-  const handleDelete = districtName => {
+  const handleDelete = districtId => {
     firestore()
       .collection('Districts')
-      .where('name', '==', districtName)
-      .get()
-      .then(querySnapshot => {
-        querySnapshot.forEach(doc => {
-          doc.ref
-            .delete()
-            .then(() => {
-              Toast.show({
-                type: 'success',
-                text1: 'Success',
-                text2: 'District deleted',
-              });
-              getData();
-            })
-            .catch(error => {
-              console.error('Error removing document: ', error);
-            });
+      .doc(districtId)
+      .delete()
+      .then(() => {
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: 'District deleted',
         });
+        getData();
+      })
+      .catch(error => {
+        console.error('Error removing document: ', error);
       });
   };
 
   const getData = () => {
     setLoading(true);
-    firestore()
-      .collection('Districts')
-      .get()
-      .then(querySnapshot => {
-        setData(querySnapshot.docs.map(doc => doc.data()));
-        setLoading(false);
-      });
+    firestore().collection('Districts').get();
+    const districtData = querySnapshot.docs.map(doc => {
+      return {id: doc.id, ...doc.data()};
+    });
+    setData(districtData);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -118,11 +111,13 @@ const District = () => {
           data.map((item, index) => (
             <View key={index} style={styles.listItem}>
               <Text style={styles.btnText}>{item.name}</Text>
-              <Button
-                title="Delete"
-                style={styles.btn}
-                onPress={() => handleDelete(item.name)}
-              />
+              {user.role === 'admin' && (
+                <Button
+                  title="Delete"
+                  style={styles.btn}
+                  onPress={() => handleDelete(item.id)}
+                />
+              )}
             </View>
           ))
         ) : (

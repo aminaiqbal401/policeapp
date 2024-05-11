@@ -91,33 +91,32 @@ const Staff = ({route}) => {
       .where('stationData.name', '==', stationName)
       .get()
       .then(querySnapshot => {
-        setData(querySnapshot.docs.map(doc => doc.data()));
+        const staffData = querySnapshot.docs.map(doc => {
+          return {id: doc.id, ...doc.data()};
+        });
+        setData(staffData);
         setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error getting documents: ', error);
       });
   };
 
-  const handleDelete = item => {
+  const handleDelete = id => {
     firestore()
       .collection('Staff')
-      .where('stationName.name', '==', item.stationName)
-      .where('contactNumber', '==', item.contactNumber)
-      .get()
-      .then(querySnapshot => {
-        querySnapshot.forEach(doc => {
-          doc.ref
-            .delete()
-            .then(() => {
-              Toast.show({
-                type: 'success',
-                text1: 'Success',
-                text2: 'Staff member deleted successfully',
-              });
-              getData();
-            })
-            .catch(error => {
-              console.error('Error removing document: ', error);
-            });
+      .doc(id)
+      .delete()
+      .then(() => {
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: 'Staff member deleted successfully',
         });
+        getData();
+      })
+      .catch(error => {
+        console.error('Error removing document: ', error);
       });
   };
 
@@ -205,11 +204,13 @@ const Staff = ({route}) => {
                   Contact Number: {item.contactNumber}
                 </Text>
               </View>
-              <Button
-                title="Delete"
-                style={styles.btn}
-                onPress={() => handleDelete(item)}
-              />
+              {user.role === 'admin' && (
+                <Button
+                  title="Delete"
+                  style={styles.btn}
+                  onPress={() => handleDelete(item.id)}
+                />
+              )}
               <Button
                 title="Get Report"
                 style={styles.btn}

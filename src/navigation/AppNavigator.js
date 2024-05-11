@@ -11,6 +11,7 @@ import District from '../screens/admin/District';
 import PoliceStation from '../screens/admin/PoliceStation';
 import Staff from '../screens/Staff';
 import Crime from '../screens/Crime';
+import EditPoliceStation from '../screens/EditingScreens/EditPoliceStation';
 
 const Stack = createStackNavigator();
 
@@ -38,6 +39,10 @@ const AppNavigator = () => {
             <Stack.Screen name="policeStation" component={PoliceStation} />
             <Stack.Screen name="staff" component={Staff} />
             <Stack.Screen name="crime" component={Crime} />
+            <Stack.Screen
+              name="editPoliceStation"
+              component={EditPoliceStation}
+            />
           </Stack.Group>
         )}
       </Stack.Navigator>

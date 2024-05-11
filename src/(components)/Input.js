@@ -12,6 +12,7 @@ const Input = ({
   onChangeText,
   secureTextEntry,
   keyboardType,
+  value,
 }) => {
   return (
     <TextInput
@@ -23,6 +24,7 @@ const Input = ({
       secureTextEntry={secureTextEntry}
       id={id}
       name={name}
+      value={value}
     />
   );
 };

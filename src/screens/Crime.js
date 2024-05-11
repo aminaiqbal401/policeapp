@@ -15,6 +15,7 @@ const Crime = ({route}) => {
     crimeTitle: '',
     description: '',
     act: '',
+    criminalName: '',
   });
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -63,10 +64,19 @@ const Crime = ({route}) => {
       });
       return;
     }
+    if (!formData.criminalName) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Enter Criminal Name',
+      });
+      return;
+    }
 
     firestore()
       .collection('Crime')
       .add({
+        criminalName: formData.criminalName,
         crimeTitle: formData.crimeTitle,
         description: formData.description,
         act: formData.act,
@@ -89,33 +99,29 @@ const Crime = ({route}) => {
       .where('stationData.name', '==', stationName)
       .get()
       .then(querySnapshot => {
-        setData(querySnapshot.docs.map(doc => doc.data()));
+        const crimeData = querySnapshot.docs.map(doc => {
+          return {id: doc.id, ...doc.data()};
+        });
+        setData(crimeData);
         setLoading(false);
       });
   };
 
-  const handleDelete = item => {
+  const handleDelete = id => {
     firestore()
       .collection('Crime')
-      .where('stationName.name', '==', item.stationName)
-      .where('description', '==', item.description)
-      .get()
-      .then(querySnapshot => {
-        querySnapshot.forEach(doc => {
-          doc.ref
-            .delete()
-            .then(() => {
-              Toast.show({
-                type: 'success',
-                text1: 'Success',
-                text2: 'Crime member deleted successfully',
-              });
-              getData();
-            })
-            .catch(error => {
-              console.error('Error removing document: ', error);
-            });
+      .doc(id)
+      .delete()
+      .then(() => {
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: 'Crime member deleted successfully',
         });
+        getData();
+      })
+      .catch(error => {
+        console.error('Error removing document: ', error);
       });
   };
 
@@ -151,6 +157,12 @@ const Crime = ({route}) => {
       <Text style={[TEXT.heading, styles.heading]}>Add Crime</Text>
       <View style={styles.inputView}>
         <Text>Station Name: {stationName}</Text>
+        <Input
+          placeholder={'Criminal Name'}
+          id={'criminalName'}
+          name={'criminalName'}
+          onChangeText={handleChange}
+        />
         <Input
           placeholder={'Crime Title'}
           id={'crimeTitle'}
@@ -191,15 +203,20 @@ const Crime = ({route}) => {
                   Crime Title: {item.crimeTitle}
                 </Text>
                 <Text style={styles.btnText}>
+                  Criminal Name: {item.criminalName}
+                </Text>
+                <Text style={styles.btnText}>
                   Description: {item.description}
                 </Text>
                 <Text style={styles.btnText}>Act: {item.act}</Text>
               </View>
-              <Button
-                title="Delete"
-                style={styles.btn}
-                onPress={() => handleDelete(item)}
-              />
+              {user.role === 'admin' && (
+                <Button
+                  title="Delete"
+                  style={styles.btn}
+                  onPress={() => handleDelete(item.id)}
+                />
+              )}
               <Button
                 title="Get Report"
                 style={styles.btn}
