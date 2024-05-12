@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     marginBottom: pixelSizeVertical(60),
   },
   container: {
-    backgroundColor: COLOR.green,
+    backgroundColor: COLOR.bg,
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',

@@ -17,7 +17,7 @@ export default WhiteBtn;
 
 const styles = StyleSheet.create({
   btnText: {
-    color: COLOR.green,
+    color: COLOR.bg,
     fontSize: fontPixel(18),
     fontFamily: FONT_FAMILY.montserratSemiBold,
   },

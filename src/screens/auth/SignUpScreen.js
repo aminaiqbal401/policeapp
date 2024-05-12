@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
     marginTop: pixelSizeVertical(50),
   },
   container: {
-    backgroundColor: COLOR.green,
+    backgroundColor: COLOR.bg,
     flex: 1,
   },
   scrollContainer: {

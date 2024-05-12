@@ -75,12 +75,20 @@ const District = () => {
 
   const getData = () => {
     setLoading(true);
-    firestore().collection('Districts').get();
-    const districtData = querySnapshot.docs.map(doc => {
-      return {id: doc.id, ...doc.data()};
-    });
-    setData(districtData);
-    setLoading(false);
+    firestore()
+      .collection('Districts')
+      .get()
+      .then(querySnapshot => {
+        const tehsilData = querySnapshot.docs.map(doc => {
+          return {id: doc.id, ...doc.data()};
+        });
+        setData(tehsilData);
+        setLoading(false);
+      })
+      .catch(error => {
+        setLoading(false);
+        console.error('Error getting District documents: ', error);
+      });
   };
 
   useEffect(() => {
